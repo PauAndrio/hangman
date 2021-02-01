@@ -10,14 +10,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
 db = SQLAlchemy(app)
 
-# Model
 
+# Model
 def random_pk():
     return random.randint(1e9, 1e10)
+
 
 def random_word():
     words = [line.strip() for line in open('words.txt') if len(line) > 10]
     return random.choice(words).upper()
+
 
 class Game(db.Model):
     pk = db.Column(db.Integer, primary_key=True, default=random_pk)
