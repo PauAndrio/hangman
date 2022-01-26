@@ -90,7 +90,9 @@ def play(game_id):
         if len(letter) == 1 and letter.isalpha():
             game.try_letter(letter)
 
-    if flask.request.is_xhr:
+    # Check if request is ajax
+    request_xhr_key = flask.request.headers.get('X-Requested-With')
+    if request_xhr_key and request_xhr_key == 'XMLHttpRequest':
         return flask.jsonify(current=game.current,
                              errors=game.errors,
                              finished=game.finished)
