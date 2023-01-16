@@ -62,5 +62,14 @@
   <script src="{{ url_for('static', filename='main.js') }}"></script>
   <script>
     updateDrawing('{{ game.errors }}');
+    word = '{{ game.word }}'
+    errors = ''
+    tried = ''
+    current = ''
+    for (var i = 0; i < word.length; i++) {
+        current += '_'
+    }
+
+
   </script>
 {% endblock %}

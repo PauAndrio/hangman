@@ -44,9 +44,9 @@ class Game(db.Model):
 
     # Play
 
-    def try_letter(self, letter):
-        if not self.finished and letter not in self.tried:
-            self.tried += letter
+    def update_tried(self, tried):
+        if not self.finished:
+            self.tried = tried
             db.session.commit()
 
     # Game status
@@ -86,9 +86,9 @@ def play(game_id):
     game = Game.query.get_or_404(game_id)
 
     if flask.request.method == 'POST':
-        letter = flask.request.form['letter'].upper()
-        if len(letter) == 1 and letter.isalpha():
-            game.try_letter(letter)
+        tried = flask.request.form['tried']
+        print(tried)
+        game.update_tried(tried)
 
     # Check if request is ajax
     request_xhr_key = flask.request.headers.get('X-Requested-With')
