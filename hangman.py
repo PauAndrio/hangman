@@ -87,7 +87,6 @@ def play(game_id):
 
     if flask.request.method == 'POST':
         tried = flask.request.form['tried']
-        print(tried)
         game.update_tried(tried)
 
     # Check if request is ajax

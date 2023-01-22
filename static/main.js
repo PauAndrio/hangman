@@ -10,8 +10,6 @@ $('#letter-form').submit(function(e) {
 
       /* If letter in word */
       if (word.indexOf(letter) > -1){
-          console.log('word');
-          console.log(word);
           /* Update current */
           for (var i = 0; i < word.length; i++) {
                if (tried.indexOf(word[i]) > -1){
@@ -19,15 +17,11 @@ $('#letter-form').submit(function(e) {
                 }
            }
           /* ************** */
-          console.log('current')
-          console.log(current)
       }
       /* Letter not in word */
       else{
           errors += letter;
       }
-      console.log('Errors');
-      console.log(errors);
 
       /* Update current */
       $('#current').text(current);
