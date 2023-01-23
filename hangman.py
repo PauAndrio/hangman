@@ -1,15 +1,22 @@
-import random
-
 import flask
 from flask_sqlalchemy import SQLAlchemy
+import random
 
-app = flask.Flask(__name__)
+db = SQLAlchemy()
 
-# Database
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
-db = SQLAlchemy(app)
 
+def create_app():
+    app = flask.Flask(__name__)
+
+    # Database
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
+    with app.app_context():
+        db.init_app(app)
+    return app
+
+
+app = create_app()
 
 # Model
 def random_pk():
@@ -102,5 +109,6 @@ def play(game_id):
 # Main
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(host='0.0.0.0', debug=True)
 
