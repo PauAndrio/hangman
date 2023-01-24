@@ -7,7 +7,6 @@ db = SQLAlchemy()
 
 def create_app():
     app = flask.Flask(__name__)
-
     # Database
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
@@ -109,6 +108,5 @@ def play(game_id):
 # Main
 
 if __name__ == '__main__':
-    app = create_app()
     app.run(host='0.0.0.0', debug=True)
 
