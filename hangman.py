@@ -4,19 +4,6 @@ import random
 
 db = SQLAlchemy()
 
-
-def create_app():
-    app = flask.Flask(__name__)
-    # Database
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
-    with app.app_context():
-        db.init_app(app)
-    return app
-
-
-app = create_app()
-
 # Model
 def random_pk():
     return random.randint(1e9, 1e10)
@@ -70,43 +57,55 @@ class Game(db.Model):
         return self.won or self.lost
 
 
-# Controller
 
-@app.route('/')
-def home():
-    games = sorted(
-        [game for game in Game.query.all() if game.won],
-        key=lambda game: -game.points)[:10]
-    return flask.render_template('home.html', games=games)
+def create_app():
+    app = flask.Flask(__name__)
+    # Database
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hangman.db'
+    with app.app_context():
+        db.init_app(app)
 
-@app.route('/play')
-def new_game():
-    player = flask.request.args.get('player')
-    game = Game(player)
-    db.session.add(game)
-    db.session.commit()
-    return flask.redirect(flask.url_for('play', game_id=game.pk))
+    # Controller
 
-@app.route('/play/<game_id>', methods=['GET', 'POST'])
-def play(game_id):
-    game = Game.query.get_or_404(game_id)
+    @app.route('/')
+    def home():
+        games = sorted(
+            [game for game in Game.query.all() if game.won],
+            key=lambda game: -game.points)[:10]
+        return flask.render_template('home.html', games=games)
 
-    if flask.request.method == 'POST':
-        letter = flask.request.form['letter'].upper()
-        if len(letter) == 1 and letter.isalpha():
-            game.try_letter(letter)
+    @app.route('/play')
+    def new_game():
+        player = flask.request.args.get('player')
+        game = Game(player)
+        db.session.add(game)
+        db.session.commit()
+        return flask.redirect(flask.url_for('play', game_id=game.pk))
 
-    # Check if request is ajax
-    request_xhr_key = flask.request.headers.get('X-Requested-With')
-    if request_xhr_key and request_xhr_key == 'XMLHttpRequest':
-        return flask.jsonify(current=game.current,
-                             errors=game.errors,
-                             finished=game.finished)
-    else:
-        return flask.render_template('play.html', game=game)
+    @app.route('/play/<game_id>', methods=['GET', 'POST'])
+    def play(game_id):
+        game = Game.query.get_or_404(game_id)
+
+        if flask.request.method == 'POST':
+            letter = flask.request.form['letter'].upper()
+            if len(letter) == 1 and letter.isalpha():
+                game.try_letter(letter)
+
+        # Check if request is ajax
+        request_xhr_key = flask.request.headers.get('X-Requested-With')
+        if request_xhr_key and request_xhr_key == 'XMLHttpRequest':
+            return flask.jsonify(current=game.current,
+                                 errors=game.errors,
+                                 finished=game.finished)
+        else:
+            return flask.render_template('play.html', game=game)
+
+    return app
+
 
 # Main
-
 if __name__ == '__main__':
+    app = create_app()
     app.run(host='0.0.0.0', debug=True)
 
